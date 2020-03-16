@@ -3,6 +3,7 @@
 
 void getBoard(char arr[8][8])
 {
+	system("clear");
 	for(int i = 1; i <= 9; i++){
 		if(i == 9)
 			printf("  a b c d e f g h");
