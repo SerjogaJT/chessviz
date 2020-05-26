@@ -1,2 +1,2 @@
-main : main.c
-    gcc -Wall main.c
+main	:	main.c
+	gcc -Wall main.c
