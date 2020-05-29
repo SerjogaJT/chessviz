@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void tostep(int *a, char *b) {
+void tostep(char *a, char *b) {
   *b = *a;
   *a = ' ';
 }
