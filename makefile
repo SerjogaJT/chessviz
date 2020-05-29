@@ -1,2 +1,2 @@
-main: main.c
-	@gcc -Wall -o main main.c
+main: bin/main.c
+	@gcc -Wall -o main bin/main.c bin/chessviz.c
