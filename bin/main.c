@@ -3,14 +3,13 @@
 #include <stdlib.h>
 
 int main() {
-  struct step *movements = NULL;
+  struct step *movements=NULL;
   int end, hire = 0;
   if (readFile(&movements, &end) != 0) {
     printf("Count the game failed.\n");
     return 0;
   }
-  char board[8][8] = {"rnbqkbnr", "pppppppp", "        ", "        ",
-                      "        ", "        ", "PPPPPPPP", "RNBQKBNR"};
+  char board[8][8] = {"rnbqkbnr", "pppppppp", "        ", "        ", "        ", "        ", "PPPPPPPP", "RNBQKBNR"};
   copyBoard(movements, board, hire);
   int run = 1;
   int enter;
