@@ -2,22 +2,23 @@
 #include <stdlib.h>
 
 struct step {
-  int number; // íîìåð õîäà
+  int number; // Ð½Ð¾Ð¼ÐµÑ€ Ñ…Ð¾Ð´Ð°
   char figurW;
-  char stepW; /*e - âçÿòèe íà ïðîõîäå; + - øàõ; # - ìàò; Z è z - ðàêèðîâêè*/
-  int keysW[4]; // êëþ÷è õîäà áåëûõ
-  int msW;      //Ìàò = 2; øàõ = 1; èíà÷å 0
+  char stepW; /*e - Ð²Ð·ÑÑ‚Ð¸e Ð½Ð° Ð¿Ñ€Ð¾Ñ…Ð¾Ð´Ðµ; + - ÑˆÐ°Ñ…; # - Ð¼Ð°Ñ‚; Z Ð¸ z - Ñ€Ð°ÐºÐ¸Ñ€Ð¾Ð²ÐºÐ¸*/
+  int keysW[4]; // ÐºÐ»ÑŽÑ‡Ð¸ Ñ…Ð¾Ð´Ð° Ð±ÐµÐ»Ñ‹Ñ…
+  int msW;      //ÐœÐ°Ñ‚ = 2; ÑˆÐ°Ñ… = 1; Ð¸Ð½Ð°Ñ‡Ðµ 0
   char figurB;
   char stepB;
-  int keysB[4]; // êëþ÷è õîäà ÷¸ðíûõ
+  int keysB[4]; // ÐºÐ»ÑŽÑ‡Ð¸ Ñ…Ð¾Ð´Ð° Ñ‡Ñ‘Ñ€Ð½Ñ‹Ñ…
   int msB;
-  char lastMove[8][8]; // ïðîøëûé õîä
+  char lastMove[8][8]; // Ð¿Ñ€Ð¾ÑˆÐ»Ñ‹Ð¹ Ñ…Ð¾Ð´
 };
 
 void getBoard(char arr[8][8]);
 void tostep(char *, char *);
 int readFile(struct step **, int *);
 void next(struct step *, char arr[8][8], int);
+int checkStep(struct step *, int);
 void back(struct step *, char arr[8][8], int);
 void setBoard(struct step *, char board[8][8], int);
 void copyBoard(struct step *, char board[8][8], int);
@@ -93,7 +94,7 @@ int readFile(struct step **movements, int *end) {
   FILE *gameSteps = NULL;
   unsigned int steps = 0;
   char str[30];
-  //Ñ÷¸ò õîäîâ
+  //Ð¡Ñ‡Ñ‘Ñ‚ Ñ…Ð¾Ð´Ð¾Ð²
   gameSteps = fopen("game.txt", "r");
   if (gameSteps != NULL) {
     while (fgets(str, 30, gameSteps)) {
@@ -103,7 +104,7 @@ int readFile(struct step **movements, int *end) {
     *end = steps - 1;
   } else
     return 1;
-  //Çàïèñü Õîäîâ
+  //Ð—Ð°Ð¿Ð¸ÑÑŒ Ð¥Ð¾Ð´Ð¾Ð²
   *movements = malloc(steps * sizeof(struct step));
   if (*movements == NULL)
     return 1;
@@ -112,14 +113,14 @@ int readFile(struct step **movements, int *end) {
     char figurs[6] = "RNBQKp";
     steps = 0;
     while (fgets(str, 30, gameSteps)) {
-      //Íîìåð Õîäà
+      //ÐÐ¾Ð¼ÐµÑ€ Ð¥Ð¾Ð´Ð°
       (*movements)[steps].number = steps + 1;
-      //Áåëûå
+      //Ð‘ÐµÐ»Ñ‹Ðµ
       int ptr = 3;
       if (str[ptr] != figurs[0] && str[ptr] != figurs[1] &&
           str[ptr] != figurs[2] && str[ptr] != figurs[3] &&
           str[ptr] != figurs[4]) {
-        //Ôèãóðà, êëþ÷è è òèï õîäà
+        //Ð¤Ð¸Ð³ÑƒÑ€Ð°, ÐºÐ»ÑŽÑ‡Ð¸ Ð¸ Ñ‚Ð¸Ð¿ Ñ…Ð¾Ð´Ð°
         (*movements)[steps].figurW = figurs[5];
         (*movements)[steps].keysW[0] = str[ptr++] - 97;
         (*movements)[steps].keysW[1] = str[ptr++] - 49;
@@ -127,7 +128,7 @@ int readFile(struct step **movements, int *end) {
         (*movements)[steps].keysW[2] = str[ptr++] - 97;
         (*movements)[steps].keysW[3] = str[ptr++] - 49;
       } else {
-        //Ôèãóðà, êëþ÷è è òèï õîäà
+        //Ð¤Ð¸Ð³ÑƒÑ€Ð°, ÐºÐ»ÑŽÑ‡Ð¸ Ð¸ Ñ‚Ð¸Ð¿ Ñ…Ð¾Ð´Ð°
         (*movements)[steps].figurW = str[ptr++];
         (*movements)[steps].keysW[0] = str[ptr++] - 97;
         (*movements)[steps].keysW[1] = str[ptr++] - 49;
@@ -142,11 +143,11 @@ int readFile(struct step **movements, int *end) {
       else
         (*movements)[steps].msW = 0;
       ptr++;
-      //×¸ðíûå
+      //Ð§Ñ‘Ñ€Ð½Ñ‹Ðµ
       if (str[ptr] != figurs[0] && str[ptr] != figurs[1] &&
           str[ptr] != figurs[2] && str[ptr] != figurs[3] &&
           str[ptr] != figurs[4]) {
-        //Ôèãóðà, êëþ÷è è òèï õîäà
+        //Ð¤Ð¸Ð³ÑƒÑ€Ð°, ÐºÐ»ÑŽÑ‡Ð¸ Ð¸ Ñ‚Ð¸Ð¿ Ñ…Ð¾Ð´Ð°
         (*movements)[steps].figurB = figurs[5];
         (*movements)[steps].keysB[0] = str[ptr] - 97;
         (*movements)[steps].keysB[1] = str[++ptr] - 49;
@@ -154,7 +155,7 @@ int readFile(struct step **movements, int *end) {
         (*movements)[steps].keysB[2] = str[++ptr] - 97;
         (*movements)[steps].keysB[3] = str[++ptr] - 49;
       } else {
-        //Ôèãóðà, êëþ÷è è òèï õîäà
+        //Ð¤Ð¸Ð³ÑƒÑ€Ð°, ÐºÐ»ÑŽÑ‡Ð¸ Ð¸ Ñ‚Ð¸Ð¿ Ñ…Ð¾Ð´Ð°
         (*movements)[steps].figurB = str[ptr++];
         (*movements)[steps].keysB[0] = str[ptr++] - 97;
         (*movements)[steps].keysB[1] = str[ptr++] - 49;
@@ -178,11 +179,54 @@ int readFile(struct step **movements, int *end) {
 }
 
 void next(struct step *movements, char board[8][8], int hire) {
-  tostep(&board[movements[hire].keysW[1]][movements[hire].keysW[0]],
-         &board[movements[hire].keysW[3]][movements[hire].keysW[2]]);
-  tostep(&board[movements[hire].keysB[1]][movements[hire].keysB[0]],
-         &board[movements[hire].keysB[3]][movements[hire].keysB[2]]);
-  copyBoard(movements, board, hire + 1);
+  if (checkStep(movements, hire)) {
+    printf("Quit the game and check the input of the file on move number %d\n",
+           hire);
+    system("pause");
+  } else {
+    tostep(&board[movements[hire].keysW[1]][movements[hire].keysW[0]],
+           &board[movements[hire].keysW[3]][movements[hire].keysW[2]]);
+    tostep(&board[movements[hire].keysB[1]][movements[hire].keysB[0]],
+           &board[movements[hire].keysB[3]][movements[hire].keysB[2]]);
+    copyBoard(movements, board, hire + 1);
+  }
+}
+
+int checkStep(struct step * movements, int hire) {
+  if (movements[hire].figurW == 'p' || movements[hire].figurB == 'p') {
+    //Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ñ…Ð¾Ð´ Ð¿ÐµÑˆÐºÐ¸
+    int i, j;
+    if (movements[hire].keysW[1] == 1)
+      i = 1;
+    else
+      i = 0;
+    if (movements[hire].keysB[1] == 6)
+      j = 1;
+    else
+      j = 0;
+    if (movements[hire].figurW == 'p') {
+      if (movements[hire].keysW[0] != movements[hire].keysW[2] && movements[hire].stepW != 'e') {
+        printf("Wrong move of the white pawn. (Horizont)\n");
+        return 1;
+      }
+      if (movements[hire].keysW[3] - movements[hire].keysW[1] > i + 1) {
+        printf("Wrong move of the white pawn. (Vertical)\n");
+        return 1;
+      }
+      
+    }
+    if (movements[hire].figurB == 'p'){
+      if (movements[hire].keysB[1] - movements[hire].keysB[3] > j + 1) {
+        printf("Wrong move of the white pawn. (Horizont)\n");
+        return 1;
+      }
+      if (movements[hire].keysB[0] != movements[hire].keysB[2] && movements[hire].stepB != 'e') {
+        printf("Wrong move of the white pawn. (Horizont)\n");
+        return 1;
+      }
+    }
+  }
+  return 0;
 }
 
 void back(struct step *movements, char board[8][8], int hire) {
