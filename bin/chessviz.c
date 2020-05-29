@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void tostep(char *a, char *b) {
+void tostep(int *a, char *b) {
   *b = *a;
   *a = ' ';
 }
@@ -29,7 +29,7 @@ int readFile(struct step **movements, int *end) {
   FILE *gameSteps = NULL;
   unsigned int steps = 0;
   char str[30];
-  //Счёт ходов
+  //Г‘Г·ВёГІ ГµГ®Г¤Г®Гў
   gameSteps = fopen("bin/game.txt", "r");
   if (gameSteps != NULL) {
     while (fgets(str, 30, gameSteps)) {
@@ -39,7 +39,7 @@ int readFile(struct step **movements, int *end) {
     *end = steps - 1;
   } else
     return 1;
-  //Запись Ходов
+  //Г‡Г ГЇГЁГ±Гј Г•Г®Г¤Г®Гў
   *movements = malloc(steps * sizeof(struct step));
   if (*movements == NULL)
     return 1;
@@ -48,14 +48,14 @@ int readFile(struct step **movements, int *end) {
     char figurs[6] = "RNBQKp";
     steps = 0;
     while (fgets(str, 30, gameSteps)) {
-      //Номер Хода
+      //ГЌГ®Г¬ГҐГ° Г•Г®Г¤Г 
       (*movements)[steps].number = steps + 1;
-      //Белые
+      //ГЃГҐГ«Г»ГҐ
       int ptr = 3;
       if (str[ptr] != figurs[0] && str[ptr] != figurs[1] &&
           str[ptr] != figurs[2] && str[ptr] != figurs[3] &&
           str[ptr] != figurs[4]) {
-        //Фигура, ключи и тип хода
+        //Г”ГЁГЈГіГ°Г , ГЄГ«ГѕГ·ГЁ ГЁ ГІГЁГЇ ГµГ®Г¤Г 
         (*movements)[steps].figurW = figurs[5];
         (*movements)[steps].keysW[0] = str[ptr++] - 97;
         (*movements)[steps].keysW[1] = str[ptr++] - 49;
@@ -63,7 +63,7 @@ int readFile(struct step **movements, int *end) {
         (*movements)[steps].keysW[2] = str[ptr++] - 97;
         (*movements)[steps].keysW[3] = str[ptr++] - 49;
       } else {
-        //Фигура, ключи и тип хода
+        //Г”ГЁГЈГіГ°Г , ГЄГ«ГѕГ·ГЁ ГЁ ГІГЁГЇ ГµГ®Г¤Г 
         (*movements)[steps].figurW = str[ptr++];
         (*movements)[steps].keysW[0] = str[ptr++] - 97;
         (*movements)[steps].keysW[1] = str[ptr++] - 49;
@@ -78,11 +78,11 @@ int readFile(struct step **movements, int *end) {
       else
         (*movements)[steps].msW = 0;
       ptr++;
-      //Чёрные
+      //Г—ВёГ°Г­Г»ГҐ
       if (str[ptr] != figurs[0] && str[ptr] != figurs[1] &&
           str[ptr] != figurs[2] && str[ptr] != figurs[3] &&
           str[ptr] != figurs[4]) {
-        //Фигура, ключи и тип хода
+        //Г”ГЁГЈГіГ°Г , ГЄГ«ГѕГ·ГЁ ГЁ ГІГЁГЇ ГµГ®Г¤Г 
         (*movements)[steps].figurB = figurs[5];
         (*movements)[steps].keysB[0] = str[ptr] - 97;
         (*movements)[steps].keysB[1] = str[++ptr] - 49;
@@ -90,7 +90,7 @@ int readFile(struct step **movements, int *end) {
         (*movements)[steps].keysB[2] = str[++ptr] - 97;
         (*movements)[steps].keysB[3] = str[++ptr] - 49;
       } else {
-        //Фигура, ключи и тип хода
+        //Г”ГЁГЈГіГ°Г , ГЄГ«ГѕГ·ГЁ ГЁ ГІГЁГЇ ГµГ®Г¤Г 
         (*movements)[steps].figurB = str[ptr++];
         (*movements)[steps].keysB[0] = str[ptr++] - 97;
         (*movements)[steps].keysB[1] = str[ptr++] - 49;
@@ -129,7 +129,7 @@ void next(struct step *movements, char board[8][8], int hire) {
 
 int checkStep(struct step *movements, int hire) {
   if (movements[hire].figurW == 'p' || movements[hire].figurB == 'p') {
-    //проверка на первый ход пешки
+    //ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГЇГҐГ°ГўГ»Г© ГµГ®Г¤ ГЇГҐГёГЄГЁ
     int i, j;
     if (movements[hire].keysW[1] == 1)
       i = 1;
